@@ -32,21 +32,25 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
 	{
 		private static readonly byte[] PublicKey = Assembly.GetExecutingAssembly().GetName().GetPublicKey();
 
-        readonly AssemblyBuilder assemblyBuilder;
-        readonly ModuleBuilder moduleBuilder;
+        private readonly ModuleBuilder _moduleBuilder;
+		private readonly object gate = new object();
+		private readonly AssemblyBuilder _assemblyBuilder;
 
-        // don't expose ModuleBuilder
-        // public ModuleBuilder ModuleBuilder { get { return moduleBuilder; } }
+		public DynamicAssembly(string moduleName)
+        {
+			var assemblyName = new AssemblyName(moduleName);
+			assemblyName.SetPublicKey(PublicKey);
+            _assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            _moduleBuilder = _assemblyBuilder.DefineDynamicModule(moduleName);
+        }
 
-        readonly object gate = new object();
-
-        // requires lock on mono environment. see: https://github.com/neuecc/MessagePack-CSharp/issues/161
+		// requires lock on mono environment. see: https://github.com/neuecc/MessagePack-CSharp/issues/161
 
         public TypeBuilder DefineType(string name, TypeAttributes attr)
         {
             lock (gate)
             {
-                return moduleBuilder.DefineType(name, attr);
+                return _moduleBuilder.DefineType(name, attr);
             }
         }
 
@@ -54,7 +58,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
         {
             lock (gate)
             {
-                return moduleBuilder.DefineType(name, attr, parent);
+                return _moduleBuilder.DefineType(name, attr, parent);
             }
         }
 
@@ -62,16 +66,8 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
         {
             lock (gate)
             {
-                return moduleBuilder.DefineType(name, attr, parent, interfaces);
+                return _moduleBuilder.DefineType(name, attr, parent, interfaces);
             }
-        }
-
-        public DynamicAssembly(string moduleName)
-        {
-			var assemblyName = new AssemblyName(moduleName);
-			assemblyName.SetPublicKey(PublicKey);
-            this.assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-            this.moduleBuilder = assemblyBuilder.DefineDynamicModule(moduleName);
         }
     }
 }

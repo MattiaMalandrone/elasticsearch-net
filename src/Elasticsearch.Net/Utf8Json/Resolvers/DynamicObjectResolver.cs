@@ -363,7 +363,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 				// special case for exception, modify
 				serializationInfo = new MetaType(type, nameMutator, propertyMapper, false);
 
-				serializationInfo.BestmatchConstructor = null;
+				serializationInfo.BestMatchConstructor = null;
 				serializationInfo.ConstructorParameters = new MetaMember[0];
 				serializationInfo.Members = new[] { new StringConstantValueMetaMember(nameMutator("ClassName"), type.FullName) }
 					.Concat(serializationInfo.Members.Where(x => !ignoreSet.Contains(x.Name)))
@@ -662,7 +662,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 			}
 
 			// Special case for serialize IEnumerable<>.
-			if (info.IsClass && info.BestmatchConstructor == null)
+			if (info.IsClass && info.BestMatchConstructor == null)
 			{
 				Type elementType;
 				if (TryGetInterfaceEnumerableElementType(type, out elementType))
@@ -888,7 +888,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 
 		static void BuildDeserialize(Type type, MetaType info, ILGenerator il, Func<int, MetaMember, bool> tryEmitLoadCustomFormatter, bool useGetUninitializedObject, int firstArgIndex)
 		{
-			if (info.IsClass && info.BestmatchConstructor == null && !(useGetUninitializedObject && info.IsConcreteClass))
+			if (info.IsClass && info.BestMatchConstructor == null && !(useGetUninitializedObject && info.IsConcreteClass))
 			{
 				il.Emit(OpCodes.Ldstr, "generated serializer for " + type.Name + " does not support deserialize.");
 				il.Emit(OpCodes.Newobj, EmitInfo.InvalidOperationExceptionConstructor);
@@ -928,9 +928,9 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 
 			// check side-effect-free for optimize set member value(reduce is-exists-member on json check)
 			var isSideEffectFreeType = true;
-			if (info.BestmatchConstructor != null)
+			if (info.BestMatchConstructor != null)
 			{
-				isSideEffectFreeType = IsSideEffectFreeConstructorType(info.BestmatchConstructor);
+				isSideEffectFreeType = IsSideEffectFreeConstructorType(info.BestMatchConstructor);
 				// if set only property, it is not side-effect but same as has side-effect
 				var hasSetOnlyMember = info.Members.Any(x => !x.IsReadable && x.IsWritable);
 				if (hasSetOnlyMember)
@@ -1095,14 +1095,14 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 					result = il.DeclareLocal(type);
 				}
 
-				if (info.BestmatchConstructor != null)
+				if (info.BestMatchConstructor != null)
 				{
 					foreach (var item in info.ConstructorParameters)
 					{
 						var local = members.First(x => x.MemberInfo == item);
 						il.EmitLdloc(local.LocalField);
 					}
-					il.Emit(OpCodes.Newobj, info.BestmatchConstructor);
+					il.Emit(OpCodes.Newobj, info.BestMatchConstructor);
 				}
 				else
 				{
@@ -1162,7 +1162,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 			else
 			{
 				var result = il.DeclareLocal(type);
-				if (info.BestmatchConstructor == null)
+				if (info.BestMatchConstructor == null)
 				{
 					il.Emit(OpCodes.Ldloca, result);
 					il.Emit(OpCodes.Initobj, type);
@@ -1174,7 +1174,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 						var local = members.First(x => x.MemberInfo == item);
 						il.EmitLdloc(local.LocalField);
 					}
-					il.Emit(OpCodes.Newobj, info.BestmatchConstructor);
+					il.Emit(OpCodes.Newobj, info.BestMatchConstructor);
 					il.Emit(OpCodes.Stloc, result);
 				}
 

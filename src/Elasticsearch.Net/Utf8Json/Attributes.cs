@@ -29,8 +29,8 @@ namespace Elasticsearch.Net.Utf8Json
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 	internal class JsonFormatterAttribute : Attribute
     {
-        public Type FormatterType { get; private set; }
-        public object[] Arguments { get; private set; }
+        public Type FormatterType { get; }
+        public object[] Arguments { get; }
 
         public JsonFormatterAttribute(Type formatterType)
         {
@@ -47,12 +47,10 @@ namespace Elasticsearch.Net.Utf8Json
     [AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false, Inherited = true)]
 	internal class SerializationConstructorAttribute : Attribute
     {
-
     }
 
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 	internal class InterfaceDataContractAttribute : Attribute
     {
-
     }
 }

@@ -30,63 +30,48 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 {
 	internal sealed class DateTimeFormatter : IJsonFormatter<DateTime>
     {
-        readonly string formatString;
+        private readonly string _formatString;
 
-        public DateTimeFormatter()
-        {
-            this.formatString = null;
-        }
+        public DateTimeFormatter() => _formatString = null;
 
-        public DateTimeFormatter(string formatString)
-        {
-            this.formatString = formatString;
-        }
+		public DateTimeFormatter(string formatString) => _formatString = formatString;
 
-        public void Serialize(ref JsonWriter writer, DateTime value, IJsonFormatterResolver formatterResolver)
-        {
-            writer.WriteString(value.ToString(formatString));
-        }
+		public void Serialize(ref JsonWriter writer, DateTime value, IJsonFormatterResolver formatterResolver) =>
+			writer.WriteString(value.ToString(this._formatString));
 
-        public DateTime Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            var str = reader.ReadString();
-            if (formatString == null)
-            {
-                return DateTime.Parse(str, CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                return DateTime.ParseExact(str, formatString, CultureInfo.InvariantCulture);
-            }
-        }
+		public DateTime Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+		{
+			var str = reader.ReadString();
+			return this._formatString == null
+				? DateTime.Parse(str, CultureInfo.InvariantCulture)
+				: DateTime.ParseExact(str, this._formatString, CultureInfo.InvariantCulture);
+		}
     }
 
 	internal sealed class NullableDateTimeFormatter : IJsonFormatter<DateTime?>
     {
-        readonly DateTimeFormatter innerFormatter;
+        private readonly DateTimeFormatter _innerFormatter;
 
-        public NullableDateTimeFormatter()
+        public NullableDateTimeFormatter() => _innerFormatter = new DateTimeFormatter();
+
+		public NullableDateTimeFormatter(string formatString) => _innerFormatter = new DateTimeFormatter(formatString);
+
+		public void Serialize(ref JsonWriter writer, DateTime? value, IJsonFormatterResolver formatterResolver)
         {
-            this.innerFormatter = new DateTimeFormatter();
-        }
+            if (value == null)
+			{
+				writer.WriteNull();
+				return;
+			}
 
-        public NullableDateTimeFormatter(string formatString)
-        {
-            this.innerFormatter = new DateTimeFormatter(formatString);
-        }
-
-        public void Serialize(ref JsonWriter writer, DateTime? value, IJsonFormatterResolver formatterResolver)
-        {
-            if (value == null) { writer.WriteNull(); return; }
-
-            innerFormatter.Serialize(ref writer, value.Value, formatterResolver);
+            _innerFormatter.Serialize(ref writer, value.Value, formatterResolver);
         }
 
         public DateTime? Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             if (reader.ReadIsNull()) return null;
 
-            return innerFormatter.Deserialize(ref reader, formatterResolver);
+            return _innerFormatter.Deserialize(ref reader, formatterResolver);
         }
     }
 
@@ -412,35 +397,22 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 
 	internal sealed class DateTimeOffsetFormatter : IJsonFormatter<DateTimeOffset>
     {
-        readonly string formatString;
+        private readonly string _formatString;
 
-        public DateTimeOffsetFormatter()
-        {
-            this.formatString = null;
-        }
+        public DateTimeOffsetFormatter() => _formatString = null;
 
-        public DateTimeOffsetFormatter(string formatString)
-        {
-            this.formatString = formatString;
-        }
+		public DateTimeOffsetFormatter(string formatString) => _formatString = formatString;
 
-        public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver)
-        {
-            writer.WriteString(value.ToString(formatString));
-        }
+		public void Serialize(ref JsonWriter writer, DateTimeOffset value, IJsonFormatterResolver formatterResolver) =>
+			writer.WriteString(value.ToString(this._formatString));
 
-        public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            var str = reader.ReadString();
-            if (formatString == null)
-            {
-                return DateTimeOffset.Parse(str, CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                return DateTimeOffset.ParseExact(str, formatString, CultureInfo.InvariantCulture);
-            }
-        }
+		public DateTimeOffset Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+		{
+			var str = reader.ReadString();
+			return _formatString == null
+				? DateTimeOffset.Parse(str, CultureInfo.InvariantCulture)
+				: DateTimeOffset.ParseExact(str, this._formatString, CultureInfo.InvariantCulture);
+		}
     }
 
 	internal sealed class NullableDateTimeOffsetFormatter : IJsonFormatter<DateTimeOffset?>

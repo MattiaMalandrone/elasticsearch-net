@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Elasticsearch.Net.Utf8Json.Internal
@@ -74,7 +75,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 
         public GuidBits(ref Guid value)
         {
-            this = default(GuidBits);
+            this = default;
             this.Value = value;
         }
 
@@ -184,13 +185,10 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             throw new ArgumentException("Invalid Guid Pattern.");
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        static byte Parse(byte[] bytes, int highOffset)
-        {
-            return unchecked((byte)(SwitchParse(bytes[highOffset]) * 16 + SwitchParse(bytes[highOffset + 1])));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static byte Parse(byte[] bytes, int highOffset) => unchecked((byte)(SwitchParse(bytes[highOffset]) * 16 + SwitchParse(bytes[highOffset + 1])));
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         static byte SwitchParse(byte b)
         {
             // '0'(48) ~ '9'(57) => -48

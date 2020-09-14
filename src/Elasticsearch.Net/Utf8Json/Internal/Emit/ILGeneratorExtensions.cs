@@ -31,41 +31,38 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
 {
     internal struct ArgumentField
     {
-        readonly int i;
-        readonly bool @ref;
-        readonly ILGenerator il;
+        private readonly int _i;
+        private readonly bool _ref;
+        private readonly ILGenerator _il;
 
         public ArgumentField(ILGenerator il, int i, bool @ref = false)
         {
-            this.il = il;
-            this.i = i;
-            this.@ref = @ref;
+            _il = il;
+            _i = i;
+            _ref = @ref;
         }
 
         public ArgumentField(ILGenerator il, int i, Type type)
         {
-            this.il = il;
-            this.i = i;
-            this.@ref = (type.IsClass || type.IsInterface || type.IsAbstract) ? false : true;
+            _il = il;
+            _i = i;
+            _ref = !type.IsClass && !type.IsInterface && !type.IsAbstract;
         }
 
         public void EmitLoad()
         {
-            if (@ref)
+            if (_ref)
             {
-                il.EmitLdarga(i);
+                _il.EmitLdarga(this._i);
             }
             else
             {
-                il.EmitLdarg(i);
+                _il.EmitLdarg(this._i);
             }
         }
 
-        public void EmitStore()
-        {
-            il.EmitStarg(i);
-        }
-    }
+        public void EmitStore() => this._il.EmitStarg(this._i);
+	}
 
     /// <summary>
     /// Provides optimized generation code and helpers.
@@ -104,12 +101,9 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
             }
         }
 
-        public static void EmitLdloc(this ILGenerator il, LocalBuilder local)
-        {
-            EmitLdloc(il, local.LocalIndex);
-        }
+        public static void EmitLdloc(this ILGenerator il, LocalBuilder local) => EmitLdloc(il, local.LocalIndex);
 
-        /// <summary>
+		/// <summary>
         /// Pops the current value from the top of the evaluation stack and stores it in a the local variable list at a specified index.
         /// </summary>
         public static void EmitStloc(this ILGenerator il, int index)
@@ -141,12 +135,9 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
             }
         }
 
-        public static void EmitStloc(this ILGenerator il, LocalBuilder local)
-        {
-            EmitStloc(il, local.LocalIndex);
-        }
+        public static void EmitStloc(this ILGenerator il, LocalBuilder local) => EmitStloc(il, local.LocalIndex);
 
-        /// <summary>
+		/// <summary>
         /// Loads the address of the local variable at a specific index onto the evaluation statck.
         /// </summary>
         public static void EmitLdloca(this ILGenerator il, int index)
@@ -161,27 +152,15 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
             }
         }
 
-        public static void EmitLdloca(this ILGenerator il, LocalBuilder local)
-        {
-            EmitLdloca(il, local.LocalIndex);
-        }
+        public static void EmitLdloca(this ILGenerator il, LocalBuilder local) => EmitLdloca(il, local.LocalIndex);
 
-        public static void EmitTrue(this ILGenerator il)
-        {
-            EmitBoolean(il, true);
-        }
+		public static void EmitTrue(this ILGenerator il) => EmitBoolean(il, true);
 
-        public static void EmitFalse(this ILGenerator il)
-        {
-            EmitBoolean(il, false);
-        }
+		public static void EmitFalse(this ILGenerator il) => EmitBoolean(il, false);
 
-        public static void EmitBoolean(this ILGenerator il, bool value)
-        {
-            EmitLdc_I4(il, value ? 1 : 0);
-        }
+		private static void EmitBoolean(this ILGenerator il, bool value) => EmitLdc_I4(il, value ? 1 : 0);
 
-        /// <summary>
+		/// <summary>
         /// Pushes a supplied value of type int32 onto the evaluation stack as an int32.
         /// </summary>
         public static void EmitLdc_I4(this ILGenerator il, int value)

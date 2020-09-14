@@ -36,26 +36,15 @@ namespace Elasticsearch.Net.Utf8Json
 
     internal struct JsonWriter
     {
-        static readonly byte[] emptyBytes = new byte[0];
+		// write direct from UnsafeMemory
+        internal byte[] _buffer;
+        internal int _offset;
 
-        // write direct from UnsafeMemory
-        internal byte[] buffer;
-        internal int offset;
+        public int CurrentOffset  => _offset;
 
-        public int CurrentOffset
-        {
-            get
-            {
-                return offset;
-            }
-        }
+        public void AdvanceOffset(int offset) => _offset += offset;
 
-        public void AdvanceOffset(int offset)
-        {
-            this.offset += offset;
-        }
-
-        public static byte[] GetEncodedPropertyName(string propertyName)
+		public static byte[] GetEncodedPropertyName(string propertyName)
         {
             var writer = new JsonWriter();
             writer.WritePropertyName(propertyName);
@@ -90,39 +79,33 @@ namespace Elasticsearch.Net.Utf8Json
 
         public JsonWriter(byte[] initialBuffer)
         {
-            this.buffer = initialBuffer;
-            this.offset = 0;
+            _buffer = initialBuffer;
+            _offset = 0;
         }
 
-        public ArraySegment<byte> GetBuffer()
-        {
-            if (buffer == null) return new ArraySegment<byte>(emptyBytes, 0, 0);
-            return new ArraySegment<byte>(buffer, 0, offset);
-        }
+        public ArraySegment<byte> GetBuffer() =>
+			_buffer == null
+				? new ArraySegment<byte>(Array.Empty<byte>(), 0, 0)
+				: new ArraySegment<byte>(_buffer, 0, _offset);
 
-        public byte[] ToUtf8ByteArray()
-        {
-            if (buffer == null) return emptyBytes;
-            return BinaryUtil.FastCloneWithResize(buffer, offset);
-        }
+		public byte[] ToUtf8ByteArray() =>
+			_buffer == null
+				? Array.Empty<byte>()
+				: BinaryUtil.FastCloneWithResize(_buffer, _offset);
 
-        public override string ToString()
-        {
-            if (buffer == null) return null;
-            return Encoding.UTF8.GetString(buffer, 0, offset);
-        }
+		public override string ToString() =>
+			_buffer == null
+				? string.Empty
+				: Encoding.UTF8.GetString(_buffer, 0, _offset);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureCapacity(int appendLength)
-        {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, appendLength);
-        }
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void EnsureCapacity(int appendLength) => BinaryUtil.EnsureCapacity(ref _buffer, _offset, appendLength);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteRaw(byte rawValue)
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = rawValue;
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = rawValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,50 +133,50 @@ namespace Elasticsearch.Net.Utf8Json
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteRawUnsafe(byte rawValue)
         {
-            buffer[offset++] = rawValue;
+            _buffer[_offset++] = rawValue;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBeginArray()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)'[';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)'[';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteEndArray()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)']';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)']';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBeginObject()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)'{';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)'{';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteEndObject()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)'}';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)'}';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteValueSeparator()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)',';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)',';
         }
 
         /// <summary>:</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteNameSeparator()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)':';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)':';
         }
 
         /// <summary>WriteString + WriteNameSeparator</summary>
@@ -207,19 +190,19 @@ namespace Elasticsearch.Net.Utf8Json
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteQuotation()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 1);
-            buffer[offset++] = (byte)'\"';
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 1);
+            _buffer[_offset++] = (byte)'\"';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteNull()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 4);
-            buffer[offset + 0] = (byte)'n';
-            buffer[offset + 1] = (byte)'u';
-            buffer[offset + 2] = (byte)'l';
-            buffer[offset + 3] = (byte)'l';
-            offset += 4;
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 4);
+            _buffer[_offset + 0] = (byte)'n';
+            _buffer[_offset + 1] = (byte)'u';
+            _buffer[_offset + 2] = (byte)'l';
+            _buffer[_offset + 3] = (byte)'l';
+            _offset += 4;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -227,58 +210,58 @@ namespace Elasticsearch.Net.Utf8Json
         {
             if (value)
             {
-                BinaryUtil.EnsureCapacity(ref buffer, offset, 4);
-                buffer[offset + 0] = (byte)'t';
-                buffer[offset + 1] = (byte)'r';
-                buffer[offset + 2] = (byte)'u';
-                buffer[offset + 3] = (byte)'e';
-                offset += 4;
+                BinaryUtil.EnsureCapacity(ref _buffer, _offset, 4);
+                _buffer[_offset + 0] = (byte)'t';
+                _buffer[_offset + 1] = (byte)'r';
+                _buffer[_offset + 2] = (byte)'u';
+                _buffer[_offset + 3] = (byte)'e';
+                _offset += 4;
             }
             else
             {
-                BinaryUtil.EnsureCapacity(ref buffer, offset, 5);
-                buffer[offset + 0] = (byte)'f';
-                buffer[offset + 1] = (byte)'a';
-                buffer[offset + 2] = (byte)'l';
-                buffer[offset + 3] = (byte)'s';
-                buffer[offset + 4] = (byte)'e';
-                offset += 5;
+                BinaryUtil.EnsureCapacity(ref _buffer, _offset, 5);
+                _buffer[_offset + 0] = (byte)'f';
+                _buffer[_offset + 1] = (byte)'a';
+                _buffer[_offset + 2] = (byte)'l';
+                _buffer[_offset + 3] = (byte)'s';
+                _buffer[_offset + 4] = (byte)'e';
+                _offset += 5;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteTrue()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 4);
-            buffer[offset + 0] = (byte)'t';
-            buffer[offset + 1] = (byte)'r';
-            buffer[offset + 2] = (byte)'u';
-            buffer[offset + 3] = (byte)'e';
-            offset += 4;
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 4);
+            _buffer[_offset + 0] = (byte)'t';
+            _buffer[_offset + 1] = (byte)'r';
+            _buffer[_offset + 2] = (byte)'u';
+            _buffer[_offset + 3] = (byte)'e';
+            _offset += 4;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteFalse()
         {
-            BinaryUtil.EnsureCapacity(ref buffer, offset, 5);
-            buffer[offset + 0] = (byte)'f';
-            buffer[offset + 1] = (byte)'a';
-            buffer[offset + 2] = (byte)'l';
-            buffer[offset + 3] = (byte)'s';
-            buffer[offset + 4] = (byte)'e';
-            offset += 5;
+            BinaryUtil.EnsureCapacity(ref _buffer, _offset, 5);
+            _buffer[_offset + 0] = (byte)'f';
+            _buffer[_offset + 1] = (byte)'a';
+            _buffer[_offset + 2] = (byte)'l';
+            _buffer[_offset + 3] = (byte)'s';
+            _buffer[_offset + 4] = (byte)'e';
+            _offset += 5;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSingle(float value)
         {
-            offset += DoubleToStringConverter.GetBytes(ref buffer, offset, value);
+            _offset += DoubleToStringConverter.GetBytes(ref _buffer, _offset, value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDouble(double value)
         {
-            offset += DoubleToStringConverter.GetBytes(ref buffer, offset, value);
+            _offset += DoubleToStringConverter.GetBytes(ref _buffer, _offset, value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -301,7 +284,7 @@ namespace Elasticsearch.Net.Utf8Json
 
         public void WriteUInt64(ulong value)
         {
-            offset += NumberConverter.WriteUInt64(ref buffer, offset, value);
+            _offset += NumberConverter.WriteUInt64(ref _buffer, _offset, value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -324,7 +307,7 @@ namespace Elasticsearch.Net.Utf8Json
 
         public void WriteInt64(long value)
         {
-            offset += NumberConverter.WriteInt64(ref buffer, offset, value);
+            _offset += NumberConverter.WriteInt64(ref _buffer, _offset, value);
         }
 
         public void WriteString(string value)
@@ -338,14 +321,14 @@ namespace Elasticsearch.Net.Utf8Json
             // single-path escape
 
             // nonescaped-ensure
-            var startoffset = offset;
+            var startOffset = _offset;
             var max = StringEncoding.UTF8.GetMaxByteCount(value.Length) + 2;
-            BinaryUtil.EnsureCapacity(ref buffer, startoffset, max);
+            BinaryUtil.EnsureCapacity(ref _buffer, startOffset, max);
 
             var from = 0;
             var to = value.Length;
 
-            buffer[offset++] = (byte)'\"';
+            _buffer[_offset++] = (byte)'\"';
 
             // for JIT Optimization, for-loop i < str.Length
             for (int i = 0; i < value.Length; i++)
@@ -410,25 +393,25 @@ namespace Elasticsearch.Net.Utf8Json
 				}
 
                 max += escapeChar == default ? 6 : 2;
-                BinaryUtil.EnsureCapacity(ref buffer, startoffset, max); // check +escape capacity
-				offset += StringEncoding.UTF8.GetBytes(value, from, i - from, buffer, offset);
+                BinaryUtil.EnsureCapacity(ref _buffer, startOffset, max); // check +escape capacity
+				_offset += StringEncoding.UTF8.GetBytes(value, from, i - from, _buffer, _offset);
                 from = i + 1;
 
 				if (escapeChar == default)
-					ToUnicode(value[i], ref offset, buffer);
+					ToUnicode(value[i], ref _offset, _buffer);
 				else
 				{
-					buffer[offset++] = (byte)'\\';
-					buffer[offset++] = escapeChar;
+					_buffer[_offset++] = (byte)'\\';
+					_buffer[_offset++] = escapeChar;
 				}
 			}
 
             if (from != value.Length)
             {
-                offset += StringEncoding.UTF8.GetBytes(value, from, value.Length - from, buffer, offset);
+                _offset += StringEncoding.UTF8.GetBytes(value, from, value.Length - from, _buffer, _offset);
             }
 
-            buffer[offset++] = (byte)'\"';
+            _buffer[_offset++] = (byte)'\"';
         }
 
 		private static void ToUnicode(char c, ref int offset, byte[] buffer)

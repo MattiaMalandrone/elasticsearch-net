@@ -52,17 +52,13 @@ namespace Elasticsearch.Net.Utf8Json.Internal
         public void Add(string key, T value)
         {
             if (!TryAddInternal(Encoding.UTF8.GetBytes(key), value))
-            {
-                throw new ArgumentException("Key already exists. Key:" + key);
-            }
+				throw new ArgumentException("Key already exists. Key:" + key);
         }
 
         public void Add(byte[] key, T value)
         {
             if (!TryAddInternal(key, value))
-            {
-                throw new ArgumentException("Key already exists. Key:" + Encoding.UTF8.GetString(key));
-            }
+				throw new ArgumentException("Key already exists. Key:" + Encoding.UTF8.GetString(key));
         }
 
         bool TryAddInternal(byte[] key, T value)
@@ -125,7 +121,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             }
 
             NOT_FOUND:
-            value = default(T);
+            value = default;
             return false;
         }
 
@@ -157,13 +153,8 @@ namespace Elasticsearch.Net.Utf8Json.Internal
                 capacity <<= 1;
             }
 
-            if (capacity < 8)
-            {
-                return 8;
-            }
-
-            return capacity;
-        }
+            return capacity < 8 ? 8 : capacity;
+		}
 
         // only for Debug use
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
@@ -180,12 +171,9 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        struct Entry
+		struct Entry
         {
             public byte[] Key;
             public T Value;

@@ -72,10 +72,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 			return collectedProperties.Values;
 		}
 
-		public static IEnumerable<FieldInfo> GetAllFields(this Type type)
-        {
-            return GetAllFieldsCore(type, new HashSet<string>());
-        }
+		public static IEnumerable<FieldInfo> GetAllFields(this Type type) => GetAllFieldsCore(type, new HashSet<string>());
 
 		private static IEnumerable<FieldInfo> GetAllFieldsCore(Type type, HashSet<string> nameCheck)
         {

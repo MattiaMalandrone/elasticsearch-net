@@ -36,7 +36,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
         {
             var newLength = offset + appendLength;
 
-            // If null(most case fisrt time) fill byte.
+            // If null(most case first time) fill byte.
             if (bytes == null)
             {
                 bytes = new byte[newLength];

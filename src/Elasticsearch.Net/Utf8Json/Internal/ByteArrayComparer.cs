@@ -29,35 +29,31 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 {
 	internal static class ByteArrayComparer
     {
-        static readonly bool Is32Bit = (IntPtr.Size == 4);
+        private static readonly bool Is32Bit = (IntPtr.Size == 4);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetHashCode(byte[] bytes, int offset, int count)
-        {
-            if (Is32Bit)
+		{
+			if (Is32Bit)
             {
                 return unchecked((int)FarmHash.Hash32(bytes, offset, count));
             }
-            else
-            {
-                return unchecked((int)FarmHash.Hash64(bytes, offset, count));
-            }
-        }
+
+			return unchecked((int)FarmHash.Hash64(bytes, offset, count));
+		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys)
-        {
-            return Equals(xs, xsOffset, xsCount, ys, 0, ys.Length);
-        }
+        public static bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys) =>
+			Equals(xs, xsOffset, xsCount, ys, 0, ys.Length);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool Equals(byte[] xs, int xsOffset, int xsCount, byte[] ys, int ysOffset, int ysCount)
         {
             if (xs == null || ys == null || xsCount != ysCount)
-            {
-                return false;
-            }
-            if (xsCount == 0 && ysCount == 0) return true;
+				return false;
+
+			if (xsCount == 0 && ysCount == 0)
+				return true;
 
             fixed (byte* p1 = &xs[xsOffset])
             fixed (byte* p2 = &ys[ysOffset])

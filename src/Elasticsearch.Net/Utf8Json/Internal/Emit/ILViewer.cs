@@ -33,14 +33,14 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
 {
     internal class ILStreamReader : BinaryReader
     {
-        static readonly OpCode[] oneByteOpCodes = new OpCode[0x100];
-        static readonly OpCode[] twoByteOpCodes = new OpCode[0x100];
+        private static readonly OpCode[] oneByteOpCodes = new OpCode[0x100];
+        private static readonly OpCode[] twoByteOpCodes = new OpCode[0x100];
 
-        int endPosition;
+        private readonly int _endPosition;
 
-        public int CurrentPosition { get { return (int)BaseStream.Position; } }
+        public int CurrentPosition => (int)BaseStream.Position;
 
-        public bool EndOfStream { get { return !((int)BaseStream.Position < endPosition); } }
+        public bool EndOfStream => !((int)BaseStream.Position < _endPosition);
 
         static ILStreamReader()
         {
@@ -63,7 +63,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
         public ILStreamReader(byte[] ilByteArray)
             : base(RecyclableMemoryStreamFactory.Default.Create(ilByteArray))
         {
-            this.endPosition = ilByteArray.Length;
+            _endPosition = ilByteArray.Length;
         }
 
         public OpCode ReadOpCode()

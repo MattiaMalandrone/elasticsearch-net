@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Threading;
 
 namespace Elasticsearch.Net.Utf8Json.Internal
 {
@@ -45,18 +46,11 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             this.loadFactor = loadFactor;
         }
 
-        public bool TryAdd(Type key, TValue value)
-        {
-            return TryAdd(key, _ => value); // create lambda capture
-        }
+        public bool TryAdd(Type key, TValue value) => TryAdd(key, _ => value);
 
-        public bool TryAdd(Type key, Func<Type, TValue> valueFactory)
-        {
-            TValue _;
-            return TryAddInternal(key, valueFactory, out _);
-        }
+		public bool TryAdd(Type key, Func<Type, TValue> valueFactory) => TryAddInternal(key, valueFactory, out _);
 
-        bool TryAddInternal(Type key, Func<Type, TValue> valueFactory, out TValue resultingValue)
+		bool TryAddInternal(Type key, Func<Type, TValue> valueFactory, out TValue resultingValue)
         {
             lock (writerLock)
             {
@@ -170,7 +164,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             }
 
             NOT_FOUND:
-            value = default(TValue);
+            value = default;
             return false;
         }
 
@@ -195,25 +189,14 @@ namespace Elasticsearch.Net.Utf8Json.Internal
                 capacity <<= 1;
             }
 
-            if (capacity < 8)
-            {
-                return 8;
-            }
+            return capacity < 8 ? 8 : capacity;
+		}
 
-            return capacity;
-        }
+        static void VolatileWrite(ref Entry location, Entry value) => Volatile.Write(ref location, value);
 
-        static void VolatileWrite(ref Entry location, Entry value)
-        {
-            System.Threading.Volatile.Write(ref location, value);
-        }
+		static void VolatileWrite(ref Entry[] location, Entry[] value) => Volatile.Write(ref location, value);
 
-        static void VolatileWrite(ref Entry[] location, Entry[] value)
-        {
-            System.Threading.Volatile.Write(ref location, value);
-        }
-
-        class Entry
+		class Entry
         {
             public Type Key;
             public TValue Value;
@@ -221,12 +204,9 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             public Entry Next;
 
             // debug only
-            public override string ToString()
-            {
-                return Key + "(" + Count() + ")";
-            }
+            public override string ToString() => Key + "(" + Count() + ")";
 
-            int Count()
+			int Count()
             {
                 var count = 1;
                 var n = this;

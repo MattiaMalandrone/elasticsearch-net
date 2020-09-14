@@ -37,14 +37,11 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 
 	internal class AutomataDictionary : IEnumerable<KeyValuePair<string, int>>
     {
-        readonly AutomataNode root;
+        private readonly AutomataNode _root;
 
-        public AutomataDictionary()
-        {
-            root = new AutomataNode(0);
-        }
+        public AutomataDictionary() => _root = new AutomataNode(0);
 
-        public unsafe void Add(string str, int value)
+		public void Add(string str, int value)
         {
             Add(JsonWriter.GetEncodedPropertyNameWithoutQuotation(str), value);
         }
@@ -53,7 +50,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
         {
             fixed (byte* buffer = &bytes[0])
             {
-                var node = root;
+                var node = this._root;
 
                 var p = buffer;
                 var rest = bytes.Length;
@@ -73,17 +70,15 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             }
         }
 
-        public unsafe bool TryGetValue(ArraySegment<byte> bytes, out int value)
-        {
-            return TryGetValue(bytes.Array, bytes.Offset, bytes.Count, out value);
-        }
+        public bool TryGetValue(ArraySegment<byte> bytes, out int value) =>
+			TryGetValue(bytes.Array, bytes.Offset, bytes.Count, out value);
 
-        public unsafe bool TryGetValue(byte[] bytes, int offset, int count, out int value)
+		public unsafe bool TryGetValue(byte[] bytes, int offset, int count, out int value)
         {
             fixed (byte* p = &bytes[offset])
             {
                 var p1 = p;
-                var node = root;
+                var node = this._root;
                 var rest = count;
 
                 while (rest != 0 && node != null)
@@ -106,7 +101,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 
         public bool TryGetValueSafe(ArraySegment<byte> key, out int value)
         {
-            var node = root;
+            var node = this._root;
             var bytes = key.Array;
             var offset = key.Offset;
             var rest = key.Count;
@@ -132,7 +127,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
         public override string ToString()
         {
             var sb = new StringBuilder();
-            ToStringCore(root.YieldChildren(), sb, 0);
+            ToStringCore(this._root.YieldChildren(), sb, 0);
             return sb.ToString();
         }
 
@@ -156,17 +151,11 @@ namespace Elasticsearch.Net.Utf8Json.Internal
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
-        {
-            return YieldCore(this.root.YieldChildren()).GetEnumerator();
-        }
+		public IEnumerator<KeyValuePair<string, int>> GetEnumerator() => YieldCore(this._root.YieldChildren()).GetEnumerator();
 
-        static IEnumerable<KeyValuePair<string, int>> YieldCore(IEnumerable<AutomataNode> nexts)
+		static IEnumerable<KeyValuePair<string, int>> YieldCore(IEnumerable<AutomataNode> nexts)
         {
             foreach (var item in nexts)
             {
@@ -179,7 +168,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal
 
         public void EmitMatch(ILGenerator il, LocalBuilder p, LocalBuilder rest, LocalBuilder key, Action<KeyValuePair<string, int>> onFound, Action onNotFound)
         {
-            root.EmitSearchNext(il, p, rest, key, onFound, onNotFound);
+            _root.EmitSearchNext(il, p, rest, key, onFound, onNotFound);
         }
 
         class AutomataNode : IComparable<AutomataNode>

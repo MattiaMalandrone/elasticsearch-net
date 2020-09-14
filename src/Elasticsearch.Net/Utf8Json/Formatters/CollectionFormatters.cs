@@ -264,99 +264,54 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 	internal abstract class CollectionFormatterBase<TElement, TIntermediate, TCollection> : CollectionFormatterBase<TElement, TIntermediate, IEnumerator<TElement>, TCollection>
 		where TCollection : class, IEnumerable<TElement>
 	{
-		protected override IEnumerator<TElement> GetSourceEnumerator(TCollection source)
-		{
-			return source.GetEnumerator();
-		}
+		protected override IEnumerator<TElement> GetSourceEnumerator(TCollection source) => source.GetEnumerator();
 	}
 
 	internal abstract class CollectionFormatterBase<TElement, TCollection> : CollectionFormatterBase<TElement, TCollection, TCollection>
 		where TCollection : class, IEnumerable<TElement>
 	{
-		protected sealed override TCollection Complete(ref TCollection intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected sealed override TCollection Complete(ref TCollection intermediateCollection) => intermediateCollection;
 	}
 
 	internal sealed class GenericCollectionFormatter<TElement, TCollection> : CollectionFormatterBase<TElement, TCollection>
 		where TCollection : class, ICollection<TElement>, new()
 	{
-		protected override TCollection Create()
-		{
-			return new TCollection();
-		}
+		protected override TCollection Create() => new TCollection();
 
-		protected override void Add(ref TCollection collection, int index, TElement value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref TCollection collection, int index, TElement value) => collection.Add(value);
 	}
 
 	internal sealed class LinkedListFormatter<T> : CollectionFormatterBase<T, LinkedList<T>, LinkedList<T>.Enumerator, LinkedList<T>>
 	{
-		protected override void Add(ref LinkedList<T> collection, int index, T value)
-		{
-			collection.AddLast(value);
-		}
+		protected override void Add(ref LinkedList<T> collection, int index, T value) => collection.AddLast(value);
 
-		protected override LinkedList<T> Complete(ref LinkedList<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override LinkedList<T> Complete(ref LinkedList<T> intermediateCollection) => intermediateCollection;
 
-		protected override LinkedList<T> Create()
-		{
-			return new LinkedList<T>();
-		}
+		protected override LinkedList<T> Create() => new LinkedList<T>();
 
-		protected override LinkedList<T>.Enumerator GetSourceEnumerator(LinkedList<T> source)
-		{
-			return source.GetEnumerator();
-		}
+		protected override LinkedList<T>.Enumerator GetSourceEnumerator(LinkedList<T> source) => source.GetEnumerator();
 	}
 
 	internal sealed class QueueFormatter<T> : CollectionFormatterBase<T, Queue<T>, Queue<T>.Enumerator, Queue<T>>
 	{
-		protected override void Add(ref Queue<T> collection, int index, T value)
-		{
-			collection.Enqueue(value);
-		}
+		protected override void Add(ref Queue<T> collection, int index, T value) => collection.Enqueue(value);
 
-		protected override Queue<T> Create()
-		{
-			return new Queue<T>();
-		}
+		protected override Queue<T> Create() => new Queue<T>();
 
-		protected override Queue<T>.Enumerator GetSourceEnumerator(Queue<T> source)
-		{
-			return source.GetEnumerator();
-		}
+		protected override Queue<T>.Enumerator GetSourceEnumerator(Queue<T> source) => source.GetEnumerator();
 
-		protected override Queue<T> Complete(ref Queue<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override Queue<T> Complete(ref Queue<T> intermediateCollection) => intermediateCollection;
 	}
 
 
 // should deserialize reverse order.
 	internal sealed class StackFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, Stack<T>.Enumerator, Stack<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 
-		protected override Stack<T>.Enumerator GetSourceEnumerator(Stack<T> source)
-		{
-			return source.GetEnumerator();
-		}
+		protected override Stack<T>.Enumerator GetSourceEnumerator(Stack<T> source) => source.GetEnumerator();
 
 		protected override Stack<T> Complete(ref ArrayBuffer<T> intermediateCollection)
 		{
@@ -372,97 +327,50 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 
 	internal sealed class HashSetFormatter<T> : CollectionFormatterBase<T, HashSet<T>, HashSet<T>.Enumerator, HashSet<T>>
 	{
-		protected override void Add(ref HashSet<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref HashSet<T> collection, int index, T value) => collection.Add(value);
 
-		protected override HashSet<T> Complete(ref HashSet<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override HashSet<T> Complete(ref HashSet<T> intermediateCollection) => intermediateCollection;
 
-		protected override HashSet<T> Create()
-		{
-			return new HashSet<T>();
-		}
+		protected override HashSet<T> Create() => new HashSet<T>();
 
-		protected override HashSet<T>.Enumerator GetSourceEnumerator(HashSet<T> source)
-		{
-			return source.GetEnumerator();
-		}
+		protected override HashSet<T>.Enumerator GetSourceEnumerator(HashSet<T> source) => source.GetEnumerator();
 	}
 
 	internal sealed class ReadOnlyCollectionFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, ReadOnlyCollection<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ReadOnlyCollection<T> Complete(ref ArrayBuffer<T> intermediateCollection)
-		{
-			return new ReadOnlyCollection<T>(intermediateCollection.ToArray());
-		}
+		protected override ReadOnlyCollection<T> Complete(ref ArrayBuffer<T> intermediateCollection) =>
+			new ReadOnlyCollection<T>(intermediateCollection.ToArray());
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 	}
 
 	internal sealed class InterfaceListFormatter<T> : CollectionFormatterBase<T, List<T>, IList<T>>
 	{
-		protected override void Add(ref List<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref List<T> collection, int index, T value) => collection.Add(value);
 
-		protected override List<T> Create()
-		{
-			return new List<T>();
-		}
+		protected override List<T> Create() => new List<T>();
 
-		protected override IList<T> Complete(ref List<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override IList<T> Complete(ref List<T> intermediateCollection) => intermediateCollection;
 	}
 
 	internal sealed class InterfaceCollectionFormatter<T> : CollectionFormatterBase<T, List<T>, ICollection<T>>
 	{
-		protected override void Add(ref List<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref List<T> collection, int index, T value) => collection.Add(value);
 
-		protected override List<T> Create()
-		{
-			return new List<T>();
-		}
+		protected override List<T> Create() => new List<T>();
 
-		protected override ICollection<T> Complete(ref List<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override ICollection<T> Complete(ref List<T> intermediateCollection) => intermediateCollection;
 	}
 
 	internal sealed class InterfaceEnumerableFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, IEnumerable<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 
-		protected override IEnumerable<T> Complete(ref ArrayBuffer<T> intermediateCollection)
-		{
-			return intermediateCollection.ToArray();
-		}
+		protected override IEnumerable<T> Complete(ref ArrayBuffer<T> intermediateCollection) => intermediateCollection.ToArray();
 	}
 
 // {Key:key, Elements:[Array]}  (not compatible with JSON.NET)
@@ -475,15 +383,13 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 				writer.WriteNull();
 				return;
 			}
-			else
-			{
-				writer.WriteRaw(CollectionFormatterHelper.groupingName[0]);
-				formatterResolver.GetFormatterWithVerify<TKey>().Serialize(ref writer, value.Key, formatterResolver);
-				writer.WriteRaw(CollectionFormatterHelper.groupingName[1]);
-				formatterResolver.GetFormatterWithVerify<IEnumerable<TElement>>().Serialize(ref writer, value.AsEnumerable(), formatterResolver);
 
-				writer.WriteEndObject();
-			}
+			writer.WriteRaw(CollectionFormatterHelper.groupingName[0]);
+			formatterResolver.GetFormatterWithVerify<TKey>().Serialize(ref writer, value.Key, formatterResolver);
+			writer.WriteRaw(CollectionFormatterHelper.groupingName[1]);
+			formatterResolver.GetFormatterWithVerify<IEnumerable<TElement>>().Serialize(ref writer, value.AsEnumerable(), formatterResolver);
+
+			writer.WriteEndObject();
 		}
 
 		public IGrouping<TKey, TElement> Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
@@ -492,36 +398,34 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 			{
 				return null;
 			}
-			else
+
+			TKey resultKey = default;
+			IEnumerable<TElement> resultValue = default;
+
+			reader.ReadIsBeginObjectWithVerify();
+
+			var count = 0;
+			while (!reader.ReadIsEndObjectWithSkipValueSeparator(ref count))
 			{
-				TKey resultKey = default(TKey);
-				IEnumerable<TElement> resultValue = default(IEnumerable<TElement>);
+				var keyString = reader.ReadPropertyNameSegmentRaw();
+				int key;
+				CollectionFormatterHelper.groupingAutomata.TryGetValue(keyString, out key);
 
-				reader.ReadIsBeginObjectWithVerify();
-
-				var count = 0;
-				while (!reader.ReadIsEndObjectWithSkipValueSeparator(ref count))
+				switch (key)
 				{
-					var keyString = reader.ReadPropertyNameSegmentRaw();
-					int key;
-					CollectionFormatterHelper.groupingAutomata.TryGetValue(keyString, out key);
-
-					switch (key)
-					{
-						case 0:
-							resultKey = formatterResolver.GetFormatterWithVerify<TKey>().Deserialize(ref reader, formatterResolver);
-							break;
-						case 1:
-							resultValue = formatterResolver.GetFormatterWithVerify<IEnumerable<TElement>>().Deserialize(ref reader, formatterResolver);
-							break;
-						default:
-							reader.ReadNextBlock();
-							break;
-					}
+					case 0:
+						resultKey = formatterResolver.GetFormatterWithVerify<TKey>().Deserialize(ref reader, formatterResolver);
+						break;
+					case 1:
+						resultValue = formatterResolver.GetFormatterWithVerify<IEnumerable<TElement>>().Deserialize(ref reader, formatterResolver);
+						break;
+					default:
+						reader.ReadNextBlock();
+						break;
 				}
-
-				return new Grouping<TKey, TElement>(resultKey, resultValue);
 			}
+
+			return new Grouping<TKey, TElement>(resultKey, resultValue);
 		}
 	}
 
@@ -534,10 +438,8 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 				writer.WriteNull();
 				return;
 			}
-			else
-			{
-				formatterResolver.GetFormatterWithVerify<IEnumerable<IGrouping<TKey, TElement>>>().Serialize(ref writer, value.AsEnumerable(), formatterResolver);
-			}
+
+			formatterResolver.GetFormatterWithVerify<IEnumerable<IGrouping<TKey, TElement>>>().Serialize(ref writer, value.AsEnumerable(), formatterResolver);
 		}
 
 		public ILookup<TKey, TElement> Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
@@ -546,96 +448,59 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 			{
 				return null;
 			}
-			else
+
+			// check if TElement is null
+			if (reader.ReadIsNull()) return null;
+
+			var count = 0;
+
+			var formatter = formatterResolver.GetFormatterWithVerify<IGrouping<TKey, TElement>>();
+			var intermediateCollection = new Dictionary<TKey, IGrouping<TKey, TElement>>();
+
+			reader.ReadIsBeginArrayWithVerify();
+			while (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
 			{
-				if (reader.ReadIsNull()) return null;
-
-				var count = 0;
-
-				var formatter = formatterResolver.GetFormatterWithVerify<IGrouping<TKey, TElement>>();
-				var intermediateCollection = new Dictionary<TKey, IGrouping<TKey, TElement>>();
-
-				reader.ReadIsBeginArrayWithVerify();
-				while (!reader.ReadIsEndArrayWithSkipValueSeparator(ref count))
-				{
-					var g = formatter.Deserialize(ref reader, formatterResolver);
-					intermediateCollection.Add(g.Key, g);
-				}
-
-				return new Lookup<TKey, TElement>(intermediateCollection);
+				var g = formatter.Deserialize(ref reader, formatterResolver);
+				intermediateCollection.Add(g.Key, g);
 			}
+
+			return new Lookup<TKey, TElement>(intermediateCollection);
 		}
 	}
 
 	class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
 	{
-		readonly TKey key;
-		readonly IEnumerable<TElement> elements;
+		private readonly TKey _key;
+		private readonly IEnumerable<TElement> _elements;
 
 		public Grouping(TKey key, IEnumerable<TElement> elements)
 		{
-			this.key = key;
-			this.elements = elements;
+			_key = key;
+			_elements = elements;
 		}
 
-		public TKey Key
-		{
-			get
-			{
-				return key;
-			}
-		}
+		public TKey Key => _key;
 
-		public IEnumerator<TElement> GetEnumerator()
-		{
-			return elements.GetEnumerator();
-		}
+		public IEnumerator<TElement> GetEnumerator() => _elements.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 
 	class Lookup<TKey, TElement> : ILookup<TKey, TElement>
 	{
-		readonly Dictionary<TKey, IGrouping<TKey, TElement>> groupings;
+		private readonly Dictionary<TKey, IGrouping<TKey, TElement>> _groupings;
 
-		public Lookup(Dictionary<TKey, IGrouping<TKey, TElement>> groupings)
-		{
-			this.groupings = groupings;
-		}
+		public Lookup(Dictionary<TKey, IGrouping<TKey, TElement>> groupings) => _groupings = groupings;
 
-		public IEnumerable<TElement> this[TKey key]
-		{
-			get
-			{
-				return groupings[key];
-			}
-		}
+		public IEnumerable<TElement> this[TKey key] => _groupings[key];
 
-		public int Count
-		{
-			get
-			{
-				return groupings.Count;
-			}
-		}
+		public int Count => _groupings.Count;
 
-		public bool Contains(TKey key)
-		{
-			return groupings.ContainsKey(key);
-		}
+		public bool Contains(TKey key) => _groupings.ContainsKey(key);
 
-		public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
-		{
-			return groupings.Values.GetEnumerator();
-		}
+		public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator() => _groupings.Values.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return groupings.Values.GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 
 // NonGenerics
@@ -703,6 +568,7 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 			var i = 0;
 			foreach (var item in value)
 			{
+				// TODO: add i++ at end of this block.
 				if (i != 0) writer.WriteValueSeparator();
 				formatter.Serialize(ref writer, item, formatterResolver);
 			}
@@ -758,8 +624,7 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 			}
 			finally
 			{
-				var d = e as IDisposable;
-				if (d != null) d.Dispose();
+				if (e is IDisposable d) d.Dispose();
 			}
 			writer.WriteEndArray();
 		}
@@ -827,130 +692,69 @@ namespace Elasticsearch.Net.Utf8Json.Formatters
 		}
 	}
 
-
-
 	internal sealed class ObservableCollectionFormatter<T> : CollectionFormatterBase<T, ObservableCollection<T>>
 	{
-		protected override void Add(ref ObservableCollection<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ObservableCollection<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ObservableCollection<T> Create()
-		{
-			return new ObservableCollection<T>();
-		}
+		protected override ObservableCollection<T> Create() => new ObservableCollection<T>();
 	}
 
 	internal sealed class ReadOnlyObservableCollectionFormatter<T> : CollectionFormatterBase<T, ObservableCollection<T>, ReadOnlyObservableCollection<T>>
 	{
-		protected override void Add(ref ObservableCollection<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ObservableCollection<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ObservableCollection<T> Create()
-		{
-			return new ObservableCollection<T>();
-		}
+		protected override ObservableCollection<T> Create() => new ObservableCollection<T>();
 
-		protected override ReadOnlyObservableCollection<T> Complete(ref ObservableCollection<T> intermediateCollection)
-		{
-			return new ReadOnlyObservableCollection<T>(intermediateCollection);
-		}
+		protected override ReadOnlyObservableCollection<T> Complete(ref ObservableCollection<T> intermediateCollection) =>
+			new ReadOnlyObservableCollection<T>(intermediateCollection);
 	}
 
 	internal sealed class InterfaceReadOnlyListFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, IReadOnlyList<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 
-		protected override IReadOnlyList<T> Complete(ref ArrayBuffer<T> intermediateCollection)
-		{
-			return intermediateCollection.ToArray();
-		}
+		protected override IReadOnlyList<T> Complete(ref ArrayBuffer<T> intermediateCollection) => intermediateCollection.ToArray();
 	}
 
 	internal sealed class InterfaceReadOnlyCollectionFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, IReadOnlyCollection<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 
-		protected override IReadOnlyCollection<T> Complete(ref ArrayBuffer<T> intermediateCollection)
-		{
-			return intermediateCollection.ToArray();
-		}
+		protected override IReadOnlyCollection<T> Complete(ref ArrayBuffer<T> intermediateCollection) => intermediateCollection.ToArray();
 	}
 
 	internal sealed class InterfaceSetFormatter<T> : CollectionFormatterBase<T, HashSet<T>, ISet<T>>
 	{
-		protected override void Add(ref HashSet<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref HashSet<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ISet<T> Complete(ref HashSet<T> intermediateCollection)
-		{
-			return intermediateCollection;
-		}
+		protected override ISet<T> Complete(ref HashSet<T> intermediateCollection) => intermediateCollection;
 
-		protected override HashSet<T> Create()
-		{
-			return new HashSet<T>();
-		}
+		protected override HashSet<T> Create() => new HashSet<T>();
 	}
 
 	internal sealed class ConcurrentBagFormatter<T> : CollectionFormatterBase<T, ConcurrentBag<T>>
 	{
-		protected override void Add(ref ConcurrentBag<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ConcurrentBag<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ConcurrentBag<T> Create()
-		{
-			return new ConcurrentBag<T>();
-		}
+		protected override ConcurrentBag<T> Create() => new ConcurrentBag<T>();
 	}
 
 	internal sealed class ConcurrentQueueFormatter<T> : CollectionFormatterBase<T, ConcurrentQueue<T>>
 	{
-		protected override void Add(ref ConcurrentQueue<T> collection, int index, T value)
-		{
-			collection.Enqueue(value);
-		}
+		protected override void Add(ref ConcurrentQueue<T> collection, int index, T value) => collection.Enqueue(value);
 
-		protected override ConcurrentQueue<T> Create()
-		{
-			return new ConcurrentQueue<T>();
-		}
+		protected override ConcurrentQueue<T> Create() => new ConcurrentQueue<T>();
 	}
 
 	internal sealed class ConcurrentStackFormatter<T> : CollectionFormatterBase<T, ArrayBuffer<T>, ConcurrentStack<T>>
 	{
-		protected override void Add(ref ArrayBuffer<T> collection, int index, T value)
-		{
-			collection.Add(value);
-		}
+		protected override void Add(ref ArrayBuffer<T> collection, int index, T value) => collection.Add(value);
 
-		protected override ArrayBuffer<T> Create()
-		{
-			return new ArrayBuffer<T>(4);
-		}
+		protected override ArrayBuffer<T> Create() => new ArrayBuffer<T>(4);
 
 		protected override ConcurrentStack<T> Complete(ref ArrayBuffer<T> intermediateCollection)
 		{

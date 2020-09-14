@@ -167,7 +167,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
         {
             var id = Guid.NewGuid().ToString().Replace("-", "");
             var resolverType = assembly.DefineType("DynamicCompositeResolver_" + id, TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Sealed, typeof(DynamicCompositeResolver));
-            var cacheType = assembly.DefineType("DynamicCompositeResolverCache_" + id, TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Sealed, null);
+            var cacheType = assembly.DefineType("DynamicCompositeResolverCache_" + id, TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Sealed);
             var genericP = cacheType.DefineGenericParameters("T")[0];
 
             var resolverInstanceField = resolverType.DefineField("instance", resolverType, FieldAttributes.Public | FieldAttributes.Static);

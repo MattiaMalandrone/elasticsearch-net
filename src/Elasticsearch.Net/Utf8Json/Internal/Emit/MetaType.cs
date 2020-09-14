@@ -50,12 +50,11 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
 
 	internal class MetaType
     {
-        public Type Type { get; private set; }
-        public bool IsClass { get; private set; }
+        public Type Type { get; }
+        public bool IsClass { get; }
         public bool IsStruct { get { return !IsClass; } }
-        public bool IsConcreteClass { get; private set; }
-
-        public ConstructorInfo BestmatchConstructor { get; internal set; }
+        public bool IsConcreteClass { get; }
+        public ConstructorInfo BestMatchConstructor { get; internal set; }
         public MetaMember[] ConstructorParameters { get; internal set; }
         public MetaMember[] Members { get; internal set; }
 
@@ -268,7 +267,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
 
             this.IsClass = isClass;
             this.IsConcreteClass = isClass && !(type.IsAbstract || type.IsInterface);
-            this.BestmatchConstructor = ctor;
+            this.BestMatchConstructor = ctor;
             this.ConstructorParameters = constructorParameters.ToArray();
             this.Members = stringMembers.Values.ToArray();
         }
