@@ -42,36 +42,14 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 	{
 		/// <summary>AllowPrivate:False, ExcludeNull:False, NameMutate:Original</summary>
 		public static readonly IJsonFormatterResolver Default = DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateOriginal.Instance;
-		/// <summary>AllowPrivate:False, ExcludeNull:False, NameMutate:CamelCase</summary>
-		public static readonly IJsonFormatterResolver CamelCase = DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase.Instance;
-		/// <summary>AllowPrivate:False, ExcludeNull:False, NameMutate:SnakeCase</summary>
-		public static readonly IJsonFormatterResolver SnakeCase = DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase.Instance;
-		/// <summary>AllowPrivate:False, ExcludeNull:True,  NameMutate:Original</summary>
-		public static readonly IJsonFormatterResolver ExcludeNull = DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal.Instance;
 		/// <summary>AllowPrivate:False, ExcludeNull:True,  NameMutate:CamelCase</summary>
 		public static readonly IJsonFormatterResolver ExcludeNullCamelCase = DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateCamelCase.Instance;
-		/// <summary>AllowPrivate:False, ExcludeNull:True,  NameMutate:SnakeCase</summary>
-		public static readonly IJsonFormatterResolver ExcludeNullSnakeCase = DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase.Instance;
-
-		/// <summary>AllowPrivate:True,  ExcludeNull:False, NameMutate:Original</summary>
-		public static readonly IJsonFormatterResolver AllowPrivate = DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateOriginal.Instance;
-		/// <summary>AllowPrivate:True,  ExcludeNull:False, NameMutate:CamelCase</summary>
-		public static readonly IJsonFormatterResolver AllowPrivateCamelCase = DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateCamelCase.Instance;
-		/// <summary>AllowPrivate:True,  ExcludeNull:False, NameMutate:SnakeCase</summary>
-		public static readonly IJsonFormatterResolver AllowPrivateSnakeCase = DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateSnakeCase.Instance;
-		/// <summary>AllowPrivate:True,  ExcludeNull:True,  NameMutate:Original</summary>
-		public static readonly IJsonFormatterResolver AllowPrivateExcludeNull = DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateOriginal.Instance;
 		/// <summary>AllowPrivate:True,  ExcludeNull:True,  NameMutate:CamelCase</summary>
 		public static readonly IJsonFormatterResolver AllowPrivateExcludeNullCamelCase = DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateCamelCase.Instance;
-		/// <summary>AllowPrivate:True,  ExcludeNull:True,  NameMutate:SnakeCase</summary>
-		public static readonly IJsonFormatterResolver AllowPrivateExcludeNullSnakeCase = DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateSnakeCase.Instance;
 
-		public static IJsonFormatterResolver Create(Func<MemberInfo, JsonProperty> propertyMapper, Lazy<Func<string, string>> mutator, bool excludeNull)
-		{
-			return new CustomDynamicObjectResolver(propertyMapper, mutator, excludeNull);
-		}
+		public static IJsonFormatterResolver Create(Func<MemberInfo, JsonProperty> propertyMapper, Lazy<Func<string, string>> mutator, bool excludeNull) =>
+			new CustomDynamicObjectResolver(propertyMapper, mutator, excludeNull);
 	}
-
 
 	internal sealed class CustomDynamicObjectResolver : IJsonFormatterResolver
 	{
@@ -104,7 +82,6 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 		}
 	}
 
-
 	#region DynamicAssembly
 
 	internal sealed class DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateOriginal : IJsonFormatterResolver
@@ -123,111 +100,6 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 		}
 
 		DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateOriginal()
-		{
-		}
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToAssembly<T>(assembly, Instance, nameMutator, null, excludeNull);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToCamelCase;
-		static readonly bool excludeNull = false;
-		private static readonly string ModuleName = $"{ResolverConfig.Namespace}.DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase";
-
-		static readonly DynamicAssembly assembly;
-
-		static DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase()
-		{
-			assembly = new DynamicAssembly(ModuleName);
-		}
-
-		DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateCamelCase()
-		{
-		}
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToAssembly<T>(assembly, Instance, nameMutator, null, excludeNull);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToSnakeCase;
-		static readonly bool excludeNull = false;
-		private static readonly string ModuleName = $"{ResolverConfig.Namespace}.DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase";
-
-		static readonly DynamicAssembly assembly;
-
-		static DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase()
-		{
-			assembly = new DynamicAssembly(ModuleName);
-		}
-
-		DynamicObjectResolverAllowPrivateFalseExcludeNullFalseNameMutateSnakeCase()
-		{
-		}
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToAssembly<T>(assembly, Instance, nameMutator, null,excludeNull);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal();
-		static readonly Func<string, string> nameMutator = StringMutator.Original;
-		static readonly bool excludeNull = true;
-		private static readonly string ModuleName = $"{ResolverConfig.Namespace}.DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal";
-
-		static readonly DynamicAssembly assembly;
-
-		static DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal()
-		{
-			assembly = new DynamicAssembly(ModuleName);
-		}
-
-		DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateOriginal()
 		{
 		}
 
@@ -282,165 +154,15 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 		}
 	}
 
-	internal sealed class DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToSnakeCase;
-		static readonly bool excludeNull = true;
-		private static readonly string ModuleName = $"{ResolverConfig.Namespace}.DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase";
-
-		static readonly DynamicAssembly assembly;
-
-		static DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase()
-		{
-			assembly = new DynamicAssembly(ModuleName);
-		}
-
-		DynamicObjectResolverAllowPrivateFalseExcludeNullTrueNameMutateSnakeCase()
-		{
-		}
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToAssembly<T>(assembly, Instance, nameMutator, null, excludeNull);
-			}
-		}
-	}
-
 	#endregion
 
 	#region DynamicMethod
-
-	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateOriginal : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateOriginal();
-		static readonly Func<string, string> nameMutator = StringMutator.Original;
-		static readonly bool excludeNull = false;
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToDynamicMethod<T>(Instance, nameMutator, null, excludeNull, true);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateCamelCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateCamelCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToCamelCase;
-		static readonly bool excludeNull = false;
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToDynamicMethod<T>(Instance, nameMutator, null, excludeNull, true);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateSnakeCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullFalseNameMutateSnakeCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToSnakeCase;
-		static readonly bool excludeNull = false;
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToDynamicMethod<T>(Instance, nameMutator, null, excludeNull, true);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateOriginal : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateOriginal();
-		static readonly Func<string, string> nameMutator = StringMutator.Original;
-		static readonly bool excludeNull = true;
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToDynamicMethod<T>(Instance, nameMutator, null, excludeNull, true);
-			}
-		}
-	}
 
 	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateCamelCase : IJsonFormatterResolver
 	{
 		// configuration
 		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateCamelCase();
 		static readonly Func<string, string> nameMutator = StringMutator.ToCamelCase;
-		static readonly bool excludeNull = true;
-
-		public IJsonFormatter<T> GetFormatter<T>()
-		{
-			return FormatterCache<T>.formatter;
-		}
-
-		static class FormatterCache<T>
-		{
-			public static readonly IJsonFormatter<T> formatter;
-
-			static FormatterCache()
-			{
-				formatter = (IJsonFormatter<T>)DynamicObjectTypeBuilder.BuildFormatterToDynamicMethod<T>(Instance, nameMutator, null, excludeNull, true);
-			}
-		}
-	}
-
-	internal sealed class DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateSnakeCase : IJsonFormatterResolver
-	{
-		// configuration
-		public static readonly IJsonFormatterResolver Instance = new DynamicObjectResolverAllowPrivateTrueExcludeNullTrueNameMutateSnakeCase();
-		static readonly Func<string, string> nameMutator = StringMutator.ToSnakeCase;
 		static readonly bool excludeNull = true;
 
 		public IJsonFormatter<T> GetFormatter<T>()

@@ -24,10 +24,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Elasticsearch.Net.Utf8Json.Formatters;
 using Elasticsearch.Net.Utf8Json.Internal;
@@ -83,12 +83,12 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 			{typeof(IReadOnlyList<>), typeof(InterfaceReadOnlyListFormatter<>)},
 			{typeof(IReadOnlyCollection<>), typeof(InterfaceReadOnlyCollectionFormatter<>)},
 			{typeof(ISet<>), typeof(InterfaceSetFormatter<>)},
-			{typeof(System.Collections.Concurrent.ConcurrentBag<>), typeof(ConcurrentBagFormatter<>)},
-			{typeof(System.Collections.Concurrent.ConcurrentQueue<>), typeof(ConcurrentQueueFormatter<>)},
-			{typeof(System.Collections.Concurrent.ConcurrentStack<>), typeof(ConcurrentStackFormatter<>)},
+			{typeof(ConcurrentBag<>), typeof(ConcurrentBagFormatter<>)},
+			{typeof(ConcurrentQueue<>), typeof(ConcurrentQueueFormatter<>)},
+			{typeof(ConcurrentStack<>), typeof(ConcurrentStackFormatter<>)},
 			{typeof(ReadOnlyDictionary<,>), typeof(ReadOnlyDictionaryFormatter<,>)},
 			{typeof(IReadOnlyDictionary<,>), typeof(InterfaceReadOnlyDictionaryFormatter<,>)},
-			{typeof(System.Collections.Concurrent.ConcurrentDictionary<,>), typeof(ConcurrentDictionaryFormatter<,>)},
+			{typeof(ConcurrentDictionary<,>), typeof(ConcurrentDictionaryFormatter<,>)},
 			{typeof(Lazy<>), typeof(LazyFormatter<>)},
 			{typeof(Task<>), typeof(TaskValueFormatter<>)},
 		};

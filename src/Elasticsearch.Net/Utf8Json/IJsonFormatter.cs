@@ -42,14 +42,4 @@ namespace Elasticsearch.Net.Utf8Json
         void SerializeToPropertyName(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver);
         T DeserializeFromPropertyName(ref JsonReader reader, IJsonFormatterResolver formatterResolver);
     }
-
-	internal static class JsonFormatterExtensions
-    {
-        public static string ToJsonString<T>(this IJsonFormatter<T> formatter, T value, IJsonFormatterResolver formatterResolver)
-        {
-            var writer = new JsonWriter();
-            formatter.Serialize(ref writer, value, formatterResolver);
-            return writer.ToString();
-        }
-    }
 }

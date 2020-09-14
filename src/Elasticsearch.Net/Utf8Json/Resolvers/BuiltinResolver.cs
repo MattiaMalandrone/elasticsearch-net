@@ -36,7 +36,6 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 
         BuiltinResolver()
         {
-
         }
 
         public IJsonFormatter<T> GetFormatter<T>()
@@ -73,18 +72,18 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
                 {typeof(byte), ByteFormatter.Default},
                 {typeof(sbyte), SByteFormatter.Default},
 
-                // Nulllable Primitive
-                {typeof(Nullable<Int16>), NullableInt16Formatter.Default},
-                {typeof(Nullable<Int32>), NullableInt32Formatter.Default},
-                {typeof(Nullable<Int64>), NullableInt64Formatter.Default},
-                {typeof(Nullable<UInt16>), NullableUInt16Formatter.Default},
-                {typeof(Nullable<UInt32>), NullableUInt32Formatter.Default},
-                {typeof(Nullable<UInt64>), NullableUInt64Formatter.Default},
-                {typeof(Nullable<float>), NullableSingleFormatter.Default},
-                {typeof(Nullable<double>), NullableDoubleFormatter.Default},
-                {typeof(Nullable<bool>), NullableBooleanFormatter.Default},
-                {typeof(Nullable<byte>), NullableByteFormatter.Default},
-                {typeof(Nullable<sbyte>), NullableSByteFormatter.Default},
+                // Nullable Primitive
+                {typeof(short?), NullableInt16Formatter.Default},
+                {typeof(int?), NullableInt32Formatter.Default},
+                {typeof(long?), NullableInt64Formatter.Default},
+                {typeof(ushort?), NullableUInt16Formatter.Default},
+                {typeof(uint?), NullableUInt32Formatter.Default},
+                {typeof(ulong?), NullableUInt64Formatter.Default},
+                {typeof(float?), NullableSingleFormatter.Default},
+                {typeof(double?), NullableDoubleFormatter.Default},
+                {typeof(bool?), NullableBooleanFormatter.Default},
+                {typeof(byte?), NullableByteFormatter.Default},
+                {typeof(sbyte?), NullableSByteFormatter.Default},
 
                 // StandardClassLibraryFormatter
 
@@ -156,8 +155,7 @@ namespace Elasticsearch.Net.Utf8Json.Resolvers
 
             internal static object GetFormatter(Type t)
             {
-                object formatter;
-                if (formatterMap.TryGetValue(t, out formatter))
+				if (formatterMap.TryGetValue(t, out object formatter))
                 {
                     return formatter;
                 }
