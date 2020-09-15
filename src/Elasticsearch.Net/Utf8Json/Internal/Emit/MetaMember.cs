@@ -180,7 +180,7 @@ namespace Elasticsearch.Net.Utf8Json.Internal.Emit
     internal class InnerExceptionMetaMember : MetaMember
     {
 		private static readonly MethodInfo getInnerException =
-			ExpressionUtility.GetPropertyInfo((Exception ex) => ex.InnerException).GetGetMethod();
+			ExpressionUtility.GetPropertyInfo((Exception ex) => ex.InnerException).GetMethod;
 		private static readonly MethodInfo nonGenericSerialize =
 			ExpressionUtility.GetMethodInfo<JsonWriter>(writer => JsonSerializer.NonGeneric.Serialize(ref writer, default, default));
 
